@@ -183,7 +183,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	// Handle different functions
 	if function == "read" { //read a variable
 		return t.read(stub, args)
-	} else if function == "return_car" {
+	} else if function == "get_vehicle_details" {
 		v, err := t.retrieve_v5c(stub, args[0])
 		if err != nil {
 			fmt.Printf("QUERY: Error retrieving v5c: %s", err)
