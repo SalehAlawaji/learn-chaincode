@@ -161,6 +161,9 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
 
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1. name of the key and value to set")
+	}
 	// Handle different functions
 	if function == "init" {
 		return t.Init(stub, "init", args)
