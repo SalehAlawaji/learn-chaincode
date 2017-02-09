@@ -182,7 +182,9 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 // Query is our entry point for queries
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("query is running " + function)
-
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1. name of the key and value to set")
+	}
 	// Handle different functions
 	if function == "read" { //read a variable
 		return t.read(stub, args)
