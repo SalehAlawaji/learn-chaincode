@@ -20,7 +20,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"regexp"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -65,14 +64,14 @@ func (t *SimpleChaincode) create_vehicle(stub shim.ChaincodeStubInterface, calle
 
 	vehicle_json := "{" + v5c_ID + vin + make + model + reg + owner + colour + leaseContract + status + scrapped + "}" // Concatenates the variables to create the total JSON object
 
-	matched, err := regexp.Match("^[A-z][A-z][0-9]{7}", []byte(v5cID)) // matched = true if the v5cID passed fits format of two letters followed by seven digits
+	//matched, err := regexp.Match("^[A-z][A-z][0-9]{7}", []byte(v5cID)) // matched = true if the v5cID passed fits format of two letters followed by seven digits
 
-	if err != nil {
-		fmt.Printf("CREATE_VEHICLE: Invalid v5cID: %s", err)
-		return nil, errors.New("Invalid v5cID")
-	}
+	//if err != nil {
+	//	fmt.Printf("CREATE_VEHICLE: Invalid v5cID: %s", err)
+	//	return nil, errors.New("Invalid v5cID")
+	//}
 
-	if v5c_ID == "" || matched == false {
+	/*if v5c_ID == "" || matched == false {
 		fmt.Printf("CREATE_VEHICLE: Invalid v5cID provided")
 		return nil, errors.New("Invalid v5cID provided")
 	}
@@ -82,7 +81,7 @@ func (t *SimpleChaincode) create_vehicle(stub shim.ChaincodeStubInterface, calle
 	if err != nil {
 		return nil, errors.New("Invalid JSON object")
 	}
-	/*
+	*/ /*
 		record, err := stub.GetState(v.V5cID) 								// If not an error then a record exists so cant create a new car with this V5cID as it must be unique
 
 		if record != nil { return nil, errors.New("Vehicle already exists") }
