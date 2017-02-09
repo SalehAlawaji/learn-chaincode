@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -28,6 +29,10 @@ import (
 type SimpleChaincode struct {
 }
 
+//==============================================================================================================================
+//	Vehicle - Defines the structure for a car object. JSON on right tells it what JSON fields to map to
+//			  that element when reading a JSON object into the struct e.g. JSON make -> Struct Make.
+//==============================================================================================================================
 type Vehicle struct {
 	Make            string `json:"make"`
 	Model           string `json:"model"`
@@ -48,6 +53,11 @@ func main() {
 	}
 }
 
+//=================================================================================================================================
+//	 Create Function
+//=================================================================================================================================
+//	 Create Vehicle - Creates the initial JSON for the vehcile and then saves it to the ledger.
+//=================================================================================================================================
 func (t *SimpleChaincode) create_vehicle(stub shim.ChaincodeStubInterface, caller string, caller_affiliation string, v5cID string) ([]byte, error) {
 	var v Vehicle
 
@@ -64,34 +74,37 @@ func (t *SimpleChaincode) create_vehicle(stub shim.ChaincodeStubInterface, calle
 
 	vehicle_json := "{" + v5c_ID + vin + make + model + reg + owner + colour + leaseContract + status + scrapped + "}" // Concatenates the variables to create the total JSON object
 
-	/*matched, err := regexp.Match("^[A-z][A-z][0-9]{7}", []byte(v5cID)) // matched = true if the v5cID passed fits format of two letters followed by seven digits
+	matched, err := regexp.Match("^[A-z][A-z][0-9]{7}", []byte(v5cID)) // matched = true if the v5cID passed fits format of two letters followed by seven digits
 
 	if err != nil {
 		fmt.Printf("CREATE_VEHICLE: Invalid v5cID: %s", err)
 		return nil, errors.New("Invalid v5cID")
 	}
 
-	if v5c_ID == "" || matched == false {
+	if v5c_ID == "" ||
+		matched == false {
 		fmt.Printf("CREATE_VEHICLE: Invalid v5cID provided")
 		return nil, errors.New("Invalid v5cID provided")
 	}
-	*/
-	err := json.Unmarshal([]byte(vehicle_json), &v) // Convert the JSON defined above into a vehicle object for go
+
+	err = json.Unmarshal([]byte(vehicle_json), &v) // Convert the JSON defined above into a vehicle object for go
 
 	if err != nil {
 		return nil, errors.New("Invalid JSON object")
 	}
-	/*
-		record, err := stub.GetState(v.V5cID) 								// If not an error then a record exists so cant create a new car with this V5cID as it must be unique
 
-		if record != nil { return nil, errors.New("Vehicle already exists") }
+	record, err := stub.GetState(v.V5cID) // If not an error then a record exists so cant create a new car with this V5cID as it must be unique
 
-		if 	caller_affiliation != AUTHORITY {							// Only the regulator can create a new v5c
+	if record != nil {
+		return nil, errors.New("Vehicle already exists")
+	}
 
-			return nil, errors.New(fmt.Sprintf("Permission Denied. create_vehicle. %v === %v", caller_affiliation, AUTHORITY))
+	/*if caller_affiliation != AUTHORITY { // Only the regulator can create a new v5c
 
-		}
-	*/
+		return nil, errors.New(fmt.Sprintf("Permission Denied. create_vehicle. %v === %v", caller_affiliation, AUTHORITY))
+
+	}*/
+
 	_, err = t.save_changes(stub, v)
 
 	if err != nil {
@@ -99,33 +112,33 @@ func (t *SimpleChaincode) create_vehicle(stub shim.ChaincodeStubInterface, calle
 		return nil, errors.New("Error saving changes")
 	}
 
-	/*	bytes, err := stub.GetState("v5cIDs")
+	bytes, err := stub.GetState("v5cIDs")
 
-		if err != nil {
-			return nil, errors.New("Unable to get v5cIDs")
-		}
+	if err != nil {
+		return nil, errors.New("Unable to get v5cIDs")
+	}
 
-		//var v5cIDs V5C_Holder
+	/*var v5cIDs V5C_Holder*/
 
-		err = json.Unmarshal(bytes, &v5cIDs)
+	/*err = json.Unmarshal(bytes, &v5cIDs)
 
-		if err != nil {
-			return nil, errors.New("Corrupt V5C_Holder record")
-		}
+	if err != nil {
+		return nil, errors.New("Corrupt V5C_Holder record")
+	}
 
-		v5cIDs.V5Cs = append(v5cIDs.V5Cs, v5cID)
+	v5cIDs.V5Cs = append(v5cIDs.V5Cs, v5cID)
 
-		bytes, err = json.Marshal(v5cIDs)
+	bytes, err = json.Marshal(v5cIDs)*/
 
-		if err != nil {
-			fmt.Print("Error creating V5C_Holder record")
-		}
+	if err != nil {
+		fmt.Print("Error creating V5C_Holder record")
+	}
 
-		err = stub.PutState("v5cIDs", bytes)
+	err = stub.PutState("v5cIDs", bytes)
 
-		if err != nil {
-			return nil, errors.New("Unable to put the state")
-		}*/
+	if err != nil {
+		return nil, errors.New("Unable to put the state")
+	}
 
 	return nil, nil
 
