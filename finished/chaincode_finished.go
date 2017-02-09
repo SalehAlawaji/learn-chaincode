@@ -183,6 +183,13 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	// Handle different functions
 	if function == "read" { //read a variable
 		return t.read(stub, args)
+	} else if function == "return_car" {
+		v, err := t.retrieve_v5c(stub, args[0])
+		if err != nil {
+			fmt.Printf("QUERY: Error retrieving v5c: %s", err)
+			return nil, errors.New("QUERY: Error retrieving v5c " + err.Error())
+		}
+		return t.get_vehicle_details(stub, v)
 	}
 	fmt.Println("query did not find func: " + function)
 
@@ -244,4 +251,41 @@ func (t *SimpleChaincode) saveChanges(stub shim.ChaincodeStubInterface, v Vehicl
 	}
 
 	return true, nil
+}
+
+func (t *SimpleChaincode) retrieve_v5c(stub shim.ChaincodeStubInterface, v5cID string) (Vehicle, error) {
+
+	var v Vehicle
+
+	bytes, err := stub.GetState(v5cID)
+
+	if err != nil {
+		fmt.Printf("RETRIEVE_V5C: Failed to invoke vehicle_code: %s", err)
+		return v, errors.New("RETRIEVE_V5C: Error retrieving vehicle with v5cID = " + v5cID)
+	}
+
+	err = json.Unmarshal(bytes, &v)
+
+	if err != nil {
+		fmt.Printf("RETRIEVE_V5C: Corrupt vehicle record "+string(bytes)+": %s", err)
+		return v, errors.New("RETRIEVE_V5C: Corrupt vehicle record" + string(bytes))
+	}
+
+	return v, nil
+}
+
+//=================================================================================================================================
+//	 Read Functions
+//=================================================================================================================================
+//	 get_vehicle_details
+//=================================================================================================================================
+func (t *SimpleChaincode) get_vehicle_details(stub shim.ChaincodeStubInterface, v Vehicle) ([]byte, error) {
+
+	bytes, err := json.Marshal(v)
+
+	if err != nil {
+		return nil, errors.New("GET_VEHICLE_DETAILS: Invalid vehicle object")
+	}
+	return bytes, nil
+
 }
