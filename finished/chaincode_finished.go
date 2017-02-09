@@ -65,7 +65,7 @@ func (t *SimpleChaincode) create_vehicle(stub shim.ChaincodeStubInterface, calle
 	make := "\"Make\":\"UNDEFINED\", "
 	model := "\"Model\":\"UNDEFINED\", "
 	reg := "\"Reg\":\"UNDEFINED\", "
-	owner := "\"Owner\":\"" + caller + "\", "
+	owner := "\"Owner\":\"dksjnf\", "
 	colour := "\"Colour\":\"UNDEFINED\", "
 	leaseContract := "\"LeaseContractID\":\"UNDEFINED\", "
 	status := "\"Status\":0, "
