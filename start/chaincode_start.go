@@ -96,6 +96,8 @@ func (t *SimpleChaincode) write(stub shim.ChaincodeStubInterface, args []string)
 	return nil, nil
 }
 
+// read function called only by Query function
+// this function retun the value out of blockchain
 func (t *SimpleChaincode) read(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var name, jsonResp string
 	var err error
