@@ -160,10 +160,6 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 // Invoke isur entry point to invoke a chaincode function
 func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
-
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1. name of the key and value to set")
-	}
 	// Handle different functions
 	if function == "init" {
 		return t.Init(stub, "init", args)
@@ -182,15 +178,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 // Query is our entry point for queries
 func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("query is running " + function)
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1. name of the key and value to set")
-	}
 	// Handle different functions
-	/*if function == "read" { //read a variable
-		return t.read(stub, args)
-	}*/
 	if function == "read" { //read a variable
-		return nil, errors.New("fuck you : " + function)
+		return t.read(stub, args)
+	} else if function == "get_vehicle_details" {
 		v, err := t.retrieve_v5c(stub, args[0])
 		if err != nil {
 			fmt.Printf("QUERY: Error retrieving v5c: %s", err)
@@ -202,16 +193,6 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 
 	return nil, errors.New("Received unknown function query: " + function)
 
-	if function == "s" {
-
-		return nil, errors.New("fuck you : " + function)
-		v, err := t.retrieve_v5c(stub, args[0])
-		if err != nil {
-			fmt.Printf("QUERY: Error retrieving v5c: %s", err)
-			return nil, errors.New("QUERY: Error retrieving v5c " + err.Error())
-		}
-		return t.get_vehicle_details(stub, v)
-	}
 	fmt.Println("query did not find func: " + function)
 
 	return nil, errors.New("Received unknown function query: " + function)
